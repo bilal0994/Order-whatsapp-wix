@@ -1,0 +1,82 @@
+{
+  "collections": [
+    {
+      "idSuffix": "settings",
+      "displayName": "Order on WhatsApp Settings",
+      "displayField": "whatsappNumber",
+      "fields": [
+        {
+          "key": "singletonKey",
+          "type": "TEXT",
+          "displayName": "Singleton Key"
+        },
+        {
+          "key": "whatsappNumber",
+          "type": "TEXT",
+          "displayName": "WhatsApp Number"
+        },
+        {
+          "key": "buttonText",
+          "type": "TEXT",
+          "displayName": "Button Text"
+        },
+        {
+          "key": "buttonColor",
+          "type": "TEXT",
+          "displayName": "Button Color"
+        },
+        {
+          "key": "enabled",
+          "type": "BOOLEAN",
+          "displayName": "Enabled"
+        },
+        {
+          "key": "defaultOrderStatus",
+          "type": "TEXT",
+          "displayName": "Default Order Status"
+        },
+        {
+          "key": "productVisibility",
+          "type": "TEXT",
+          "displayName": "Product Visibility"
+        },
+        {
+          "key": "selectedProductIds",
+          "type": "TEXT",
+          "displayName": "Selected Product IDs"
+        },
+        {
+          "key": "buttonPosition",
+          "type": "TEXT",
+          "displayName": "Button Position"
+        },
+        {
+          "key": "hideAddToCart",
+          "type": "BOOLEAN",
+          "displayName": "Hide Add to Cart"
+        }
+      ],
+      "dataPermissions": {
+        "itemInsert": "PRIVILEGED",
+        "itemUpdate": "PRIVILEGED",
+        "itemRemove": "PRIVILEGED",
+        "itemRead": "PRIVILEGED"
+      },
+      "indexes": [],
+      "initialData": [
+        {
+          "singletonKey": "default",
+          "whatsappNumber": "",
+          "buttonText": "Order on WhatsApp",
+          "buttonColor": "#25D366",
+          "enabled": true,
+          "defaultOrderStatus": "NOT_PAID",
+          "productVisibility": "all",
+          "selectedProductIds": "[]",
+          "buttonPosition": "after-add-to-cart",
+          "hideAddToCart": false
+        }
+      ]
+    }
+  ]
+}

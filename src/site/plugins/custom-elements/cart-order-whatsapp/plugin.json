@@ -1,0 +1,19 @@
+{
+  "$schema": "https://dev.wix.com/wix-cli/schemas/site-plugin.json",
+  "id": "316ea3dd-3548-4f98-9fa8-26a58de5ade8",
+  "referenceComponentId": "a271cda8-b323-49a8-bee4-6e4c21660d54",
+  "marketData": {
+    "name": "Order on WhatsApp — Cart",
+    "logoUrl": "../../../../assets/order-whatsapp/site-plugin-logo.svg"
+  },
+  "placements": [
+    {
+      "appDefinitionId": "1380b703-ce81-ff05-f115-39571d94dfcd",
+      "widgetId": "49dbb2d9-d9e5-4605-a147-e926605bf164",
+      "slotId": "side-cart:footer:actions:before-1"
+    }
+  ],
+  "installation": {
+    "autoAddToSite": true
+  }
+}

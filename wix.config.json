@@ -1,0 +1,5 @@
+{
+  "$schema": "https://dev.wix.com/wix-cli/schemas/wix-config.json",
+  "appId": "bded4014-20be-4629-800e-a78f0c368703",
+  "projectId": "order-whats-app"
+}

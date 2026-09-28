@@ -1,0 +1,5 @@
+{
+  "$schema": "https://dev.wix.com/wix-cli/schemas/dashboard-page.json",
+  "id": "2906f429-737e-4744-80ff-0296a7ca4f8d",
+  "title": "Order on WhatsApp"
+}

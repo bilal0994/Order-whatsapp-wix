@@ -1,0 +1,22 @@
+{
+  "$schema": "https://dev.wix.com/wix-cli/schemas/custom-element.json",
+  "id": "f0cd3b04-5bd1-4aae-a3ea-e368dec045eb",
+  "name": "Order on WhatsApp — Cart Page",
+  "width": {
+    "defaultWidth": 320,
+    "allowStretch": true,
+    "stretchByDefault": true
+  },
+  "height": {
+    "defaultHeight": 56
+  },
+  "installation": {
+    "autoAddToSite": false
+  },
+  "presets": [
+    {
+      "id": "0b5b5281-adbe-479c-8893-c2a871ad0156",
+      "thumbnailUrl": "../../../../assets/cart-page-order-whatsapp/thumbnail.svg"
+    }
+  ]
+}
