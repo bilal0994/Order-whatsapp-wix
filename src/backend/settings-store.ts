@@ -286,42 +286,64 @@ async function probeCollection(
   }
 }
 
+function rowHasSettingsJson(row: SettingsRow | null): boolean {
+  return Boolean(row?.settingsJson && String(row.settingsJson).trim());
+}
+
+function rowHasFormFields(row: SettingsRow | null): boolean {
+  if (!row) return false;
+  if (rowHasSettingsJson(row)) {
+    try {
+      const parsed = JSON.parse(String(row.settingsJson)) as Partial<AppSettings>;
+      return Array.isArray(parsed.formFields) && parsed.formFields.length > 0;
+    } catch {
+      return true; // blob present — prefer over empty primary
+    }
+  }
+  if (typeof row.formFields === 'string') return row.formFields.trim().length > 2;
+  return Array.isArray(row.formFields) && row.formFields.length > 0;
+}
+
+/**
+ * Lean Save writes the full blob to OowSettings first, then returns.
+ * Primary `@…/settings` is often stale / missing formFields after app updates.
+ * Prefer any row that carries settingsJson (or formFields) so dashboard
+ * renames reach the storefront.
+ */
 async function querySettingsWithFallback(): Promise<SettingsRow | null> {
-  try {
-    const primary = await querySettings(SETTINGS_COLLECTION_ID);
-    if (primary) return primary;
-  } catch (error) {
-    if (!isMissingCollection(error)) {
-      throw error;
-    }
-  }
+  const candidates: SettingsRow[] = [];
 
-  try {
-    const backup = await querySettings(BACKUP_SETTINGS_COLLECTION_ID);
-    if (backup) return backup;
-  } catch (error) {
-    if (!isMissingCollection(error) && !isOpaqueHandleError(error)) {
-      throw error;
+  const tryQuery = async (collectionId: string) => {
+    try {
+      const row = await querySettings(collectionId);
+      if (row) candidates.push(row);
+    } catch (error) {
+      if (
+        !isMissingCollection(error) &&
+        !isOpaqueHandleError(error) &&
+        collectionId === SETTINGS_COLLECTION_ID
+      ) {
+        // Primary opaque errors used to abort entirely; keep scanning backups.
+        if (!isSystemError(error)) throw error;
+      }
     }
-  }
+  };
 
-  try {
-    const backupGuid = await querySettings(BACKUP_SETTINGS_COLLECTION_GUID);
-    if (backupGuid) return backupGuid;
-  } catch (error) {
-    if (!isMissingCollection(error) && !isOpaqueHandleError(error)) {
-      throw error;
-    }
-  }
+  // Backup first — this is what lean Save actually updates.
+  await tryQuery(BACKUP_SETTINGS_COLLECTION_ID);
+  await tryQuery(BACKUP_SETTINGS_COLLECTION_GUID);
+  await tryQuery(SETTINGS_COLLECTION_ID);
+  await tryQuery(LEGACY_SETTINGS_COLLECTION_ID);
 
-  try {
-    return await querySettings(LEGACY_SETTINGS_COLLECTION_ID);
-  } catch (error) {
-    if (isMissingCollection(error) || isOpaqueHandleError(error)) {
-      return null;
-    }
-    throw error;
-  }
+  if (!candidates.length) return null;
+
+  const withForm = candidates.find(rowHasFormFields);
+  if (withForm) return withForm;
+
+  const withJson = candidates.find(rowHasSettingsJson);
+  if (withJson) return withJson;
+
+  return candidates[0];
 }
 
 function cleanPayload(payload: Record<string, unknown>): Record<string, unknown> {
@@ -863,6 +885,7 @@ export async function persistSettings(settings: AppSettings): Promise<AppSetting
   // Worker subrequest budget before any write runs.
 
   // 1) Backup JSON (one collection id at a time, max ~2 saves each)
+  // This is the source of truth for lean Save — loadSettings prefers it.
   let lastBackupError: unknown;
   for (const backupId of [
     BACKUP_SETTINGS_COLLECTION_ID,
